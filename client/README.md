@@ -26,8 +26,6 @@
     npm run dev
 ```
 
-
-
 ### Setup instructions for tailwind
 
 [Tail wind official instruction doc](https://tailwindcss.com/docs/installation)
@@ -38,13 +36,14 @@
     npm install -D tailwindcss postcss autoprefixer
 ```
 
-2. Create tailwind config file 
+2. Create tailwind config file
 
 ```
     npx tailwindcss init
 ```
 
 3. Add file extensions to tailwind config file in the contents property
+
 ```
     "./src/**/*.{html,js,jsx,ts,tsx}", "./index.html",
 
@@ -64,12 +63,11 @@
     [require("daisyui"), require("@tailwindcss/line-clamp")]
 ```
 
-### Adding plugins and dependencies 
+### Adding plugins and dependencies
 
 ```
 npm install @reduxjs/toolkit react-redux react-router-dom react-icons react-chartjs-2 chart.js daisyui axios react-hot-toast @tailwindcss/line-clamp
 ```
-
 
 ### Configure auto import sort esline
 
@@ -79,22 +77,29 @@ npm install @reduxjs/toolkit react-redux react-router-dom react-icons react-char
     npm i -D eslint-plugin-simple-import-sort
 ```
 
-2. Add rule in `.eslint.cjs`
+2. Add rule in `.eslint.config.js`
 
 ```
-    'simple-import-sort/imports': 'error'
+    rules: {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    }
 ```
 
-3. add simple-import sort plugin in `.eslint.cjs`
+3. add simple-import sort plugin in `.eslint.config.js`
 
 ```
-    plugins: [..., 'simple-import-sort']
+    plugins: {
+      // other plugins
+      "simple-import-sort": simpleImportSort,
+    },
 ```
 
 4. To enable auto import sort on file save in vscode
 
-    - Open `settings.json`
-    - add the following config
+   - Open `settings.json`
+   - add the following config
+
 ```
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
