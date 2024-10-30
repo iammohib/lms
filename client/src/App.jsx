@@ -1,12 +1,15 @@
 import "./App.css";
 
-import Footer from "./components/Footer";
+import { Route, Routes } from "react-router-dom";
+
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold underline">LMS-FRONTEND</h1>
-      <Footer />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
     </>
   );
 }
