@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 import Footer from "../components/Footer";
 
-// eslint-disable-next-line react/prop-types
 function HomeLayout({ children }) {
   const inputToggle = useRef(null);
 
@@ -22,11 +21,11 @@ function HomeLayout({ children }) {
           ref={inputToggle}
         />
         <div className="drawer-content">
-          <label htmlFor="my-drawer" className="text-3xl">
+          <label htmlFor="my-drawer" className="text-3xl cursor-pointer">
             <FiMenu />
           </label>
         </div>
-        <div className="drawer-side">
+        <div className="drawer-side z-50">
           <label
             htmlFor="my-drawer"
             aria-label="close sidebar"
