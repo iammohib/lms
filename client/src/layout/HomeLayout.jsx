@@ -1,11 +1,28 @@
 import { useRef } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { FiMenu } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 import Footer from "../components/Footer";
 
+// eslint-disable-next-line react/prop-types
 function HomeLayout({ children }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // check: is user loggedIn
+  const isLoggedIn = useSelector((state) => state?.auth?.isLoggedIn);
+  const role = useSelector((state) => state?.auth?.role);
+
+  // logout function
+  async function handleLogout(e) {
+    e.preventDefault();
+
+    // const res = await dispatch(logout());
+    // if (res?.payload?.success) navigate("/");
+  }
+
   const inputToggle = useRef(null);
 
   const closeSidebar = () => {
@@ -22,7 +39,7 @@ function HomeLayout({ children }) {
         />
         <div className="drawer-content">
           <label htmlFor="my-drawer" className="text-3xl cursor-pointer">
-            <FiMenu />
+            <FiMenu className="m-4" />
           </label>
         </div>
         <div className="drawer-side z-50">
@@ -43,6 +60,11 @@ function HomeLayout({ children }) {
             <li>
               <Link to={"/"}>Home</Link>
             </li>
+            {isLoggedIn && role === "ADMIN" && (
+              <li>
+                <Link to="/admin/dashboard">Admin Dashboard</Link>
+              </li>
+            )}
             <li>
               <Link to={"/"}>All Courses</Link>
             </li>
@@ -52,6 +74,27 @@ function HomeLayout({ children }) {
             <li>
               <Link to={"/"}>About Us</Link>
             </li>
+
+            {!isLoggedIn && (
+              <li className="absolute bottom-4 w-[90%] flex flex-row justify-center items-center space-x-2">
+                <button className="bg-blue-500 font-semibold flex flex-auto justify-center items-center">
+                  <Link>LogIn</Link>
+                </button>
+                <button className="bg-green-600 font-semibold flex flex-auto justify-center items-center">
+                  <Link>SignUp</Link>
+                </button>
+              </li>
+            )}
+            {isLoggedIn && (
+              <li className="absolute bottom-4 w-[90%] flex flex-row justify-center items-center space-x-2">
+                <button className="bg-yellow-600 font-semibold flex flex-auto justify-center items-center">
+                  <Link to="/user/profile">Profile</Link>
+                </button>
+                <button className="bg-red-600 font-semibold flex flex-auto justify-center items-center">
+                  <Link onClick={handleLogout}>Logout</Link>
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </div>

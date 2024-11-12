@@ -28,7 +28,7 @@ export default [
     rules: {
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
-      "react/prop-types": [0, { ignore }],
+      "react/prop-types": "off",
       ...js.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
