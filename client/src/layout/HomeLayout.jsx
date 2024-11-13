@@ -72,7 +72,7 @@ function HomeLayout({ children }) {
               <Link to={"/"}>Contact Us</Link>
             </li>
             <li>
-              <Link to={"/"}>About Us</Link>
+              <Link to={"/about"}>About Us</Link>
             </li>
 
             {!isLoggedIn && (
