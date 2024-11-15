@@ -81,7 +81,7 @@ function HomeLayout({ children }) {
                   <Link>LogIn</Link>
                 </button>
                 <button className="bg-green-600 font-semibold flex flex-auto justify-center items-center">
-                  <Link>SignUp</Link>
+                  <Link to={"/signup"}>SignUp</Link>
                 </button>
               </li>
             )}
