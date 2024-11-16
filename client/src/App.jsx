@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 
 import AboutUs from "./pages/AboutUs";
 import HomePage from "./pages/HomePage";
+import Login from "./pages/Login";
 import PageNotFound from "./pages/PageNotFound";
 import SignUp from "./pages/SignUp";
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
 
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>
