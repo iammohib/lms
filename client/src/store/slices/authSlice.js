@@ -25,6 +25,23 @@ export const createAccount = createAsyncThunk("/auth/signup", async (data) => {
   }
 });
 
+// logout function
+export const logout = createAsyncThunk("/auth/logout", async () => {
+  try {
+    const res = axiosInstance.post("user/logout");
+    toast.promise(res, {
+      loading: "",
+      success: (data) => {
+        return data?.data?.message;
+      },
+      error: "Failed to logout",
+    });
+    return (await res).data;
+  } catch (error) {
+    toast.error("Something went wrong:", error);
+  }
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,

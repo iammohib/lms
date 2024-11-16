@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 import Footer from "../components/Footer";
+import { logout } from "../store/slices/authSlice";
 
 // eslint-disable-next-line react/prop-types
 function HomeLayout({ children }) {
@@ -19,8 +20,11 @@ function HomeLayout({ children }) {
   async function handleLogout(e) {
     e.preventDefault();
 
-    // const res = await dispatch(logout());
-    // if (res?.payload?.success) navigate("/");
+    const res = await dispatch(logout());
+    if (res?.payload?.success) {
+      localStorage.removeItem("isLoggedIn");
+      navigate("/");
+    }
   }
 
   const inputToggle = useRef(null);
