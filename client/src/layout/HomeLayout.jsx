@@ -70,7 +70,7 @@ function HomeLayout({ children }) {
               </li>
             )}
             <li>
-              <Link to={"/"}>All Courses</Link>
+              <Link to={"/courses"}>All Courses</Link>
             </li>
             <li>
               <Link to={"/"}>Contact Us</Link>
