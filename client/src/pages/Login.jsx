@@ -29,27 +29,6 @@ function Login() {
       return;
     }
 
-    if (
-      !loginData.email.match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      )
-    ) {
-      toast.error("Email is not valid");
-      return;
-    }
-
-    if (
-      !loginData.password.match(
-        /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/
-      )
-    ) {
-      toast.error(
-        "Password should be 6 - 16 character long with atleast a number and special character"
-      );
-      return;
-    }
-
-    console.log(loginData);
     // dispact login todo
     const res = await dispatch(login(loginData));
     if (res?.payload?.success) {
