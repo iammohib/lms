@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function PageNotFound() {
+function Denied() {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(9);
 
@@ -19,13 +19,13 @@ function PageNotFound() {
     return () => clearInterval(intervalId);
   }, [countdown, navigate]);
   return (
-    <div className="h-screen w-full flex flex-col justify-center items-center ">
+    <main className="h-screen w-full flex flex-col justify-center items-center ">
       <div className="flex justify-center items-center ">
         <h1 className="font-extrabold text-9xl text-white tracking-widest">
-          404
+          403
         </h1>
         <p className="bg-yellow-500 text-white px-2 rounded mt-5 text-sm absolute rotate-12">
-          Page Not Found...
+          Access Denied
         </p>
       </div>
       <button
@@ -45,8 +45,8 @@ function PageNotFound() {
         &apos; in <span className="text-yellow-500">{countdown}</span>{" "}
         seconds...
       </p>
-    </div>
+    </main>
   );
 }
 
-export default PageNotFound;
+export default Denied;
