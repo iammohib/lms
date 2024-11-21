@@ -33,10 +33,9 @@ function App() {
           <Route path="/course/create" element={<CreateCourse />} />
         </Route>
 
-        <Route path="/user/profile" element={<User />} />
-        <Route
-          element={<RequireAuth allowedRoles={["ADMIN", "USER"]} />}
-        ></Route>
+        <Route element={<RequireAuth allowedRoles={["ADMIN", "USER"]} />}>
+          <Route path="/user/profile" element={<User />} />
+        </Route>
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>
