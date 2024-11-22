@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import HomeLayout from "../../layout/HomeLayout";
 
 function CourseDescription() {
+  const navigate = useNavigate();
   const { state } = useLocation();
   const { title, description, numberOfLectures, createdBy, thumbnail } = state;
 
@@ -40,7 +41,10 @@ function CourseDescription() {
                   Watch Lectures
                 </button>
               ) : (
-                <button className="bg-yellow-600 hover:bg-yellow-500 transition-all ease-in-out duration-300 font-bold rounded-md p-3 text-xl w-full">
+                <button
+                  onClick={() => navigate("/payment/checkout")}
+                  className="bg-yellow-600 hover:bg-yellow-500 transition-all ease-in-out duration-300 font-bold rounded-md p-3 text-xl w-full"
+                >
                   Subscribe
                 </button>
               )}
