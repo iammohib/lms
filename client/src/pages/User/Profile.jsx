@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import HomeLayout from "../../layout/HomeLayout";
 
 function User() {
+  const navigate = useNavigate();
   const { data } = useSelector((state) => state.auth);
   const { avatar, fullName, email, role, subscription } = data;
   console.log(data);
@@ -53,9 +54,16 @@ function User() {
               Edit Profile
             </Link>
           </div>
-          {subscription?.status !== "active" && (
+          {subscription?.status === "active" ? (
             <button className="bg-red-600 hover:bg-red-400 transition-all ease-out duration-300 rounded-sm py-2 font-semibold text-lg cursor-pointer">
               Cancle Subscription
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/payment/checkout")}
+              className="bg-red-600 hover:bg-red-400 transition-all ease-out duration-300 rounded-sm py-2 font-semibold text-lg cursor-pointer"
+            >
+              Buy Subscription
             </button>
           )}
         </div>
