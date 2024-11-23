@@ -96,6 +96,13 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(createAccount.fulfilled, (state, action) => {
+        localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("role", action?.payload?.user?.role);
+        localStorage.setItem("data", JSON.stringify(action?.payload?.user));
+        (state.isLoggedIn = true), (state.role = action?.payload?.user?.role);
+        state.data = action?.payload?.user;
+      })
       .addCase(login.fulfilled, (state, action) => {
         localStorage.setItem("isLoggedIn", true);
         localStorage.setItem("role", action?.payload?.user?.role);
