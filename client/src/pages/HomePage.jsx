@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import homepageHeroImg from "../assets/images/homepageHeroImg.png";
 import HomeLayout from "../layout/HomeLayout";
 
 function HomePage() {
+  const navigate = useNavigate();
   return (
     <HomeLayout>
       <div className="flex items-center justify-center text-white gap-10 mx-10">
@@ -19,16 +20,18 @@ function HomePage() {
           </p>
 
           <div className="space-x-6">
-            <Link>
-              <button className="bg-yellow-500 px-5 py-3 rounded-md font-semibold text-lg cursor-pointer hover:bg-yellow-600 transition-all ease-in-out duration-300">
-                Explore courses
-              </button>
-            </Link>
-            <Link>
-              <button className="border border-yellow-500 px-5 py-3 rounded-md font-semibold text-lg cursor-pointer hover:bg-yellow-600 transition-all ease-in-out duration-300">
-                Contact Us
-              </button>
-            </Link>
+            <button
+              onClick={() => navigate("/courses")}
+              className="bg-yellow-500 px-5 py-3 rounded-md font-semibold text-lg cursor-pointer hover:bg-yellow-600 transition-all ease-in-out duration-300"
+            >
+              Explore courses
+            </button>
+            <button
+              onClick={() => navigate("/contact")}
+              className="border border-yellow-500 px-5 py-3 rounded-md font-semibold text-lg cursor-pointer hover:bg-yellow-600 transition-all ease-in-out duration-300"
+            >
+              Contact Us
+            </button>
           </div>
         </div>
 
