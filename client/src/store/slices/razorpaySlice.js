@@ -6,7 +6,6 @@ import axiosInstance from "../../helpers/axiosInstance";
 const initialState = {
   key: "",
   subscription_id: "",
-  isPaymentVerified: false,
   allPayments: {},
   finalMonths: {},
   monthlySalesRecord: [],
@@ -62,10 +61,12 @@ export const cancelSubscription = createAsyncThunk(
         success: (data) => {
           return data?.data?.message;
         },
-        error: "Failed to subscription",
+        error: "Failed to unsubscribe",
       });
       return (await res).data;
     } catch (error) {
+      console.log(error);
+      console.log(error.response);
       toast.error(error?.response?.data?.message);
     }
   }
@@ -98,12 +99,6 @@ const razorpaySlice = createSlice({
       })
       .addCase(buySubscription.fulfilled, (state, action) => {
         state.subscription_id = action?.payload?.subscription_id;
-      })
-      .addCase(verifySubscription.fulfilled, (state, action) => {
-        state.isPaymentVerified = action?.payload?.success;
-      })
-      .addCase(verifySubscription.rejected, (state, action) => {
-        state.isPaymentVerified = action?.payload?.success;
       })
       .addCase(getAllPayments.fulfilled, (state, action) => {
         state.allPayments = action?.payload?.allPayments;

@@ -1,13 +1,21 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 import HomeLayout from "../../layout/HomeLayout";
+import { getUserData } from "../../store/slices/authSlice";
+import { cancelSubscription } from "../../store/slices/razorpaySlice";
 
 function User() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { data } = useSelector((state) => state.auth);
   const { avatar, fullName, email, role, subscription } = data;
-  console.log(data);
+
+  const handleCancleSubscription = async (e) => {
+    e.preventDefault();
+    await dispatch(cancelSubscription());
+    await dispatch(getUserData());
+  };
   return (
     <HomeLayout>
       <div className="min-h-screen flex justify-center items-center">
@@ -55,7 +63,10 @@ function User() {
             </Link>
           </div>
           {subscription?.status === "active" ? (
-            <button className="bg-red-600 hover:bg-red-400 transition-all ease-out duration-300 rounded-sm py-2 font-semibold text-lg cursor-pointer">
+            <button
+              onClick={handleCancleSubscription}
+              className="bg-red-600 hover:bg-red-400 transition-all ease-out duration-300 rounded-sm py-2 font-semibold text-lg cursor-pointer"
+            >
               Cancle Subscription
             </button>
           ) : (
