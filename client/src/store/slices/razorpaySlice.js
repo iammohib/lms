@@ -15,7 +15,6 @@ const initialState = {
 export const getRazorpayId = createAsyncThunk("/razorpay/getId", async () => {
   try {
     const res = await axiosInstance.get("/payments/razorpay-key");
-    console.log(res.data);
     return res.data;
   } catch (error) {
     toast.error(error.message);
@@ -27,7 +26,6 @@ export const buySubscription = createAsyncThunk(
   async () => {
     try {
       const res = await axiosInstance.post("payments/subscribe");
-      console.log(res.data);
       return res.data;
     } catch (error) {
       toast.error(error?.response?.data?.message);
@@ -39,9 +37,15 @@ export const verifySubscription = createAsyncThunk(
   "/verifySubscription",
   async (data) => {
     try {
-      const res = await axiosInstance.post("payments/verify", data);
-      console.log(res.data);
-      return res.data;
+      const res = axiosInstance.post("payments/verify", data);
+      toast.promise(res, {
+        loading: "Wait! payment in progress...",
+        success: (data) => {
+          return data?.data?.message;
+        },
+        error: "Payment failed",
+      });
+      return (await res).data;
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
@@ -60,7 +64,6 @@ export const cancelSubscription = createAsyncThunk(
         },
         error: "Failed to subscription",
       });
-      console.log((await res).data);
       return (await res).data;
     } catch (error) {
       toast.error(error?.response?.data?.message);
@@ -78,7 +81,6 @@ export const getAllPayments = createAsyncThunk("/allPayments", async () => {
       },
       error: "Failed to get payment records",
     });
-    console.log((await res).data);
     return (await res).data;
   } catch (error) {
     toast.error(error?.response?.data?.message);
