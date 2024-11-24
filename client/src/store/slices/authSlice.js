@@ -4,9 +4,18 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../helpers/axiosInstance";
 
 const initialState = {
-  isLoggedIn: JSON.parse(localStorage.getItem("isLoggedIn")) || false,
-  role: localStorage.getItem("role") || "",
-  data: JSON.parse(localStorage.getItem("data")) || {},
+  isLoggedIn:
+    localStorage.getItem("isLoggedIn") !== "undefined"
+      ? JSON.parse(localStorage.getItem("isLoggedIn"))
+      : false,
+  role:
+    localStorage.getItem("role") !== "undefined"
+      ? JSON.parse(localStorage.getItem("role"))
+      : "",
+  data:
+    localStorage.getItem("data") !== "undefined"
+      ? JSON.parse(localStorage.getItem("data"))
+      : {},
 };
 
 // create account
@@ -97,6 +106,8 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(createAccount.fulfilled, (state, action) => {
+        if (!action?.payload?.success) return;
+        console.log(action);
         localStorage.setItem("isLoggedIn", true);
         localStorage.setItem("role", action?.payload?.user?.role);
         localStorage.setItem("data", JSON.stringify(action?.payload?.user));
@@ -104,13 +115,15 @@ const authSlice = createSlice({
         state.data = action?.payload?.user;
       })
       .addCase(login.fulfilled, (state, action) => {
+        if (!action?.payload?.success) return;
         localStorage.setItem("isLoggedIn", true);
         localStorage.setItem("role", action?.payload?.user?.role);
         localStorage.setItem("data", JSON.stringify(action?.payload?.user));
         (state.isLoggedIn = true), (state.role = action?.payload?.user?.role);
         state.data = action?.payload?.user;
       })
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, (state, action) => {
+        if (!action?.payload?.success) return;
         localStorage.clear();
         (state.isLoggedIn = false), (state.role = "");
         state.data = {};
