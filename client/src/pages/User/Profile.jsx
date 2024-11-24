@@ -69,12 +69,19 @@ function User() {
             >
               Cancle Subscription
             </button>
-          ) : (
+          ) : role !== "ADMIN" ? (
             <button
               onClick={() => navigate("/payment/checkout")}
               className="bg-red-600 hover:bg-red-400 transition-all ease-out duration-300 rounded-sm py-2 font-semibold text-lg cursor-pointer"
             >
               Buy Subscription
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/admin/dashboard")}
+              className="bg-blue-600 hover:bg-blue-400 transition-all ease-out duration-300 rounded-sm py-2 font-semibold text-lg cursor-pointer"
+            >
+              Go to Admin Dashboard
             </button>
           )}
         </div>

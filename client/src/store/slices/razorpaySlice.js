@@ -100,6 +100,10 @@ const razorpaySlice = createSlice({
       .addCase(buySubscription.fulfilled, (state, action) => {
         state.subscription_id = action?.payload?.subscription_id;
       })
+      .addCase(cancelSubscription.fulfilled, (state) => {
+        state.key = "";
+        state.subscription_id = "";
+      })
       .addCase(getAllPayments.fulfilled, (state, action) => {
         state.allPayments = action?.payload?.allPayments;
         state.finalMonths = action?.payload?.finalMonths;
