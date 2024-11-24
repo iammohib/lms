@@ -10,7 +10,7 @@ const initialState = {
       : false,
   role:
     localStorage.getItem("role") !== "undefined"
-      ? JSON.parse(localStorage.getItem("role"))
+      ? localStorage.getItem("role")
       : "",
   data:
     localStorage.getItem("data") !== "undefined"
