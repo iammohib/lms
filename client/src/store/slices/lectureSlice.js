@@ -26,6 +26,28 @@ export const getCourseLectures = createAsyncThunk(
   }
 );
 
+export const removeLecture = createAsyncThunk(
+  "/removeLecture",
+  async (data) => {
+    try {
+      const response = axiosInstance.delete(
+        `/courses?courseId=${data.courseId}&lectureId=${data.lectureId}`
+      );
+
+      toast.promise(response, {
+        loading: "Wait removing the lecture",
+        success: (data) => {
+          return data?.data?.message;
+        },
+        error: "Failed to remove lecture",
+      });
+      return (await response)?.data;
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    }
+  }
+);
+
 const lectureSlice = createSlice({
   name: "lectures",
   initialState,
