@@ -24,6 +24,7 @@ function DisplayLectures() {
     await dispatch(getCourseLectures(state._id));
     setIsLoading(false);
   };
+
   const removeLectureFunc = async (value) => {
     const res = await dispatch(
       removeLecture({ courseId: state?._id, lectureId: lectures[value]?._id })
@@ -46,7 +47,7 @@ function DisplayLectures() {
               <video
                 src={lectures[currentLecture]?.lecture?.secure_url}
                 controls
-                className="rounded-2xl"
+                className="rounded-2xl w-full"
                 controlsList="nodownload"
               ></video>
             </div>
@@ -59,8 +60,19 @@ function DisplayLectures() {
             </h3>
             <p className="text-xl">{lectures[currentLecture].description}</p>
           </div>
-          <div className="max-h-screen bg-slate-900 pt-4 pl-4 rounded-2xl overflow-scroll">
+          <div className="h-screen bg-slate-900 pt-4 pl-4 rounded-2xl overflow-scroll">
             <h3 className="text-3xl font-bold">All Lectures</h3>
+            {role && role === "ADMIN" && (
+              <button
+                onClick={() =>
+                  navigate("/course/addlecture", { state: { ...state } })
+                }
+                className="bg-blue-300 w-full text-lg py-3 my-1 rounded-xl hover:bg-blue-400 transition-all ease-in-out duration-200"
+              >
+                - - - Add new lecture - - -
+              </button>
+            )}
+
             {lectures.map((elem, idx) => (
               <PlaylistCard
                 key={elem._id}
@@ -75,7 +87,19 @@ function DisplayLectures() {
           </div>
         </div>
       ) : (
-        "No lectures available"
+        <div className="flex flex-col justify-center items-center min-h-screen">
+          &quot;No lectures available&quot;
+          {role && role === "ADMIN" && (
+            <button
+              onClick={() =>
+                navigate("/course/addlecture", { state: { ...state } })
+              }
+              className="text-white bg-blue-300 text-lg p-3 my-1 rounded-xl hover:bg-blue-400 transition-all ease-in-out duration-200"
+            >
+              - - - Add new lecture - - -
+            </button>
+          )}
+        </div>
       )}
     </HomeLayout>
   );

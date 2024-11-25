@@ -48,15 +48,36 @@ export const removeLecture = createAsyncThunk(
   }
 );
 
+export const addLecture = createAsyncThunk("/addLecture", async (data) => {
+  try {
+    const response = axiosInstance.post(`/courses/${data[0]}`, data[1]);
+    toast.promise(response, {
+      loading: "Wait adding lecture to course",
+      success: (data) => {
+        return data?.data?.message;
+      },
+      error: "Failed to add lecture to course",
+    });
+    return (await response).data;
+  } catch (error) {
+    toast.error(error?.response?.data?.message);
+  }
+});
+
 const lectureSlice = createSlice({
   name: "lectures",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getCourseLectures.fulfilled, (state, action) => {
-      if (!action?.payload?.lectures) return;
-      state.lectures = action?.payload?.lectures;
-    });
+    builder
+      .addCase(getCourseLectures.fulfilled, (state, action) => {
+        if (!action?.payload?.lectures) return;
+        state.lectures = action?.payload?.lectures;
+      })
+      .addCase(addLecture.fulfilled, (state, action) => {
+        if (!action?.payload?.course) return;
+        state.lectures = action?.payload?.course?.lectures;
+      });
   },
 });
 
