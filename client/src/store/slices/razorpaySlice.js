@@ -24,7 +24,7 @@ export const buySubscription = createAsyncThunk(
   "/buySubscription",
   async () => {
     try {
-      const res = await axiosInstance.post("payments/subscribe");
+      const res = await axiosInstance.post("/payments/subscribe");
       return res.data;
     } catch (error) {
       toast.error(error?.response?.data?.message);
@@ -36,7 +36,7 @@ export const verifySubscription = createAsyncThunk(
   "/verifySubscription",
   async (data) => {
     try {
-      const res = axiosInstance.post("payments/verify", data);
+      const res = axiosInstance.post("/payments/verify", data);
       toast.promise(res, {
         loading: "Wait! payment in progress...",
         success: (data) => {
@@ -55,7 +55,7 @@ export const cancelSubscription = createAsyncThunk(
   "/cancelSubscription",
   async () => {
     try {
-      const res = axiosInstance.post("payments/unsubscribe");
+      const res = axiosInstance.post("/payments/unsubscribe");
       toast.promise(res, {
         loading: "unsubscribing the subscription",
         success: (data) => {
@@ -74,7 +74,7 @@ export const cancelSubscription = createAsyncThunk(
 
 export const getAllPayments = createAsyncThunk("/allPayments", async () => {
   try {
-    const res = axiosInstance.get("payments?count=100");
+    const res = axiosInstance.get("/payments?count=100");
     toast.promise(res, {
       loading: "Getting the payment records",
       success: (data) => {

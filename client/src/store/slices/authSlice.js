@@ -21,7 +21,7 @@ const initialState = {
 // create account
 export const createAccount = createAsyncThunk("/auth/signup", async (data) => {
   try {
-    const res = axiosInstance.post("user/register", data);
+    const res = axiosInstance.post("/user/register", data);
     toast.promise(res, {
       loading: "Wait! creating your account",
       success: (data) => {
@@ -38,7 +38,7 @@ export const createAccount = createAsyncThunk("/auth/signup", async (data) => {
 // login funtion
 export const login = createAsyncThunk("/auth/login", async (data) => {
   try {
-    const res = axiosInstance.post("user/login", data);
+    const res = axiosInstance.post("/user/login", data);
     toast.promise(res, {
       loading: "Wait! authentication in progress...",
       success: (data) => {
@@ -55,7 +55,7 @@ export const login = createAsyncThunk("/auth/login", async (data) => {
 // logout function
 export const logout = createAsyncThunk("/auth/logout", async () => {
   try {
-    const res = axiosInstance.post("user/logout");
+    const res = axiosInstance.post("/user/logout");
     toast.promise(res, {
       loading: "Wait! logout in progress...",
       success: (data) => {
@@ -74,7 +74,7 @@ export const updateProfile = createAsyncThunk(
   "/user/update/profile",
   async (data) => {
     try {
-      const res = axiosInstance.put(`user/update/${data[0]}`, data[1]);
+      const res = axiosInstance.put(`/user/update/${data[0]}`, data[1]);
       toast.promise(res, {
         loading: "Wait! updating your profile",
         success: (data) => {
@@ -111,7 +111,7 @@ export const changePassword = createAsyncThunk(
 // get-user
 export const getUserData = createAsyncThunk("/user/details", async () => {
   try {
-    const res = axiosInstance("user/me");
+    const res = axiosInstance("/user/me");
     return (await res).data;
   } catch (error) {
     toast.error(error.message);
