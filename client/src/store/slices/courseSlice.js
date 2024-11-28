@@ -34,7 +34,22 @@ export const createCourse = createAsyncThunk("/course/create", async (data) => {
     });
     return (await res).data;
   } catch (error) {
-    console.log("error", error);
+    toast.error(error?.response?.data?.message);
+  }
+});
+
+export const updateCourse = createAsyncThunk("/course/update", async (data) => {
+  try {
+    const res = axiosInstance.put(`/courses/${data[0]}`, data[1]);
+    toast.promise(res, {
+      loading: "Wait! updating the course",
+      success: (data) => {
+        return data?.data?.message;
+      },
+      error: "Failed to update course",
+    });
+    return (await res).data;
+  } catch (error) {
     toast.error(error?.response?.data?.message);
   }
 });

@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { Bar, Pie } from "react-chartjs-2";
 import { BsCollectionPlayFill, BsTrash } from "react-icons/bs";
 import { FaUsers } from "react-icons/fa";
+import { FaPen } from "react-icons/fa6";
 import { FcSalesPerformance } from "react-icons/fc";
 import { GiMoneyStack } from "react-icons/gi";
 import { useDispatch, useSelector } from "react-redux";
@@ -206,7 +207,7 @@ function AdminDashboard() {
                     </td>
                     <td className="flex items-center gap-4">
                       <button
-                        className="bg-green-500 hover:bg-green-600 transition-all ease-in-out duration-300 text-xl py-2 px-4 rounded-md font-bold"
+                        className="bg-yellow-500 hover:bg-ywllow-600 transition-all ease-in-out duration-300 text-xl py-2 px-4 rounded-md font-bold"
                         onClick={() =>
                           navigate("/course/displaylectures", {
                             state: { ...course },
@@ -214,6 +215,16 @@ function AdminDashboard() {
                         }
                       >
                         <BsCollectionPlayFill />
+                      </button>
+                      <button
+                        className="bg-green-500 hover:bg-green-600 transition-all ease-in-out duration-300 text-xl py-2 px-4 rounded-md font-bold"
+                        onClick={() =>
+                          navigate("/course/update", {
+                            state: { ...course },
+                          })
+                        }
+                      >
+                        <FaPen />
                       </button>
                       <button
                         className="bg-red-500 hover:bg-red-600 transition-all ease-in-out duration-300 text-xl py-2 px-4 rounded-md font-bold"
