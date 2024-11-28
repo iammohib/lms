@@ -21,7 +21,9 @@ import CheckoutSuccess from "./pages/Payment/CheckoutSuccess";
 import SignUp from "./pages/SignUp";
 import ChangePassword from "./pages/User/ChangePassword";
 import EditProfile from "./pages/User/EditProfile";
+import ForgotPassword from "./pages/User/ForgotPassword";
 import User from "./pages/User/Profile";
+import ResetPassword from "./pages/User/ResetPassword";
 
 function App() {
   return (
@@ -37,6 +39,8 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/changepassword" element={<ChangePassword />} />
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
 
         <Route element={<RequireAuth allowedRoles={["ADMIN"]} />}>
           <Route path="/course/create" element={<CreateCourse />} />

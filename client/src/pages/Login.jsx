@@ -91,6 +91,14 @@ function Login() {
               Signup
             </Link>
           </p>
+          <p className="text-center">
+            <Link
+              to={"/ForgotPassword"}
+              className="link text-accent cursor-pointer"
+            >
+              Forgot password?
+            </Link>
+          </p>
         </form>
       </div>
     </HomeLayout>
