@@ -54,8 +54,11 @@ function HomeLayout({ children }) {
           ></label>
           <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
             <li className="flex flex-row">
-              <Link to={"/"} className="flex flex-auto">
-                LOGO
+              <Link
+                to={"/"}
+                className="flex flex-auto font-bold text-blue-600 text-2xl"
+              >
+                LMS
               </Link>
               <button onClick={closeSidebar} className="flex text-xl">
                 <AiFillCloseCircle />
