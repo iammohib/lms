@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import RequireAuth from "./components/Auth/RequireAuth";
 import AboutUs from "./pages/AboutUs";
@@ -28,7 +28,7 @@ import ResetPassword from "./pages/User/ResetPassword";
 
 function App() {
   return (
-    <>
+    <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutUs />} />
@@ -64,7 +64,7 @@ function App() {
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-    </>
+    </Router>
   );
 }
 
