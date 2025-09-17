@@ -2,13 +2,13 @@ import { Router } from "express";
 import {
   createCourse,
   getAllCourses,
-  addLectureToCourse,
+  addLectureToCourseById,
   getLecturesByCourseId,
-  updateCourse,
-  deleteCourse,
   removeLectureFromCourse,
+  updateCourseById,
+  deleteCourseById,
 } from "../controllers/course.controller.js";
-import { isLoggedIn , authorizeRoles} from "../middlewares/auth.middleware.js";
+import { isLoggedIn, authorizeRoles } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const courseRouter = Router();
@@ -31,14 +31,14 @@ courseRouter
     isLoggedIn,
     authorizeRoles("ADMIN"),
     upload.single("lecture"),
-    addLectureToCourse
+    addLectureToCourseById
   )
   .put(
     isLoggedIn,
     authorizeRoles("ADMIN"),
     upload.single("thumbnail"),
-    updateCourse
+    updateCourseById
   )
-  .delete(isLoggedIn, authorizeRoles("ADMIN"), deleteCourse);
+  .delete(isLoggedIn, authorizeRoles("ADMIN"), deleteCourseById);
 
 export { courseRouter };

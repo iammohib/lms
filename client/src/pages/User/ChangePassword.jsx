@@ -27,7 +27,7 @@ function ChangePassword() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!data.oldPassword || !data.newPassword) {
-      toast.error("All feild are required");
+      return toast.error("All feilds are required");
     }
     const res = await dispatch(changePassword(data));
     if (res?.payload?.success) {

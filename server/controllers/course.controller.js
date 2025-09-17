@@ -9,47 +9,31 @@ import fs from "fs/promises";
 
 /**
  * @CREATE_COURSE
- * @ROUTE @POST {{URL}}/api/v1/course/
+ * @ROUTE @POST {{URL}}/api/v1/courses/
  * @ACCESS PRIVATE(ADMIN ONLY)
  */
 export const createCourse = async (req, res, next) => {
-  //  Destructuring neccessary data
-  const { title, description, category, instructor } = req.body;
   const thumbnail = req.file;
-
-  // If thumbnail is not there then return with error
-  if (!thumbnail) {
-    return next(new AppError(400, "Thumbnail is required"));
-  }
   try {
-    // If issue return an error
-    if (!title || !description || !category || !instructor) {
-      throw new Error("Fill all the feild!");
+    // If thumbnail is not there then return with error
+    if (!thumbnail) {
+      throw new Error("Thumbnail is required");
     }
 
-    // Check if course exists with the with provided title
-    const courseExist = await Course.findOne({ title });
-    if (courseExist) {
+    //  Destructuring neccessary data
+    const { title, description, category, createdBy } = req.body;
+
+    // If issue return an error
+    if (!title || !description || !category || !createdBy) {
+      throw new Error("Fill all the fields!");
+    }
+
+    // Check if course exists with the provided title
+    const courseExists = await Course.findOne({ title });
+    if (courseExists) {
       throw new Error(
         "Course is already exist with this title, use unique one"
       );
-    }
-
-    // First create course then add thumbnail
-    const course = await Course.create({
-      title,
-      description,
-      category,
-      instructor,
-      thubmnail: {
-        public_id: " ",
-        secure_url: " ",
-        folder: " ",
-      },
-    });
-
-    if (!course) {
-      throw new Error("Internal Server Error");
     }
 
     // Transformation option for cloudinary
@@ -66,10 +50,23 @@ export const createCourse = async (req, res, next) => {
       throw new Error("Internal Server Error");
     }
 
-    // Saving thumbnail details in DB
-    course.thubmnail.public_id = result.public_id;
-    course.thubmnail.secure_url = result.secure_url;
-    course.thubmnail.folder = result.folder;
+    // First create course then add thumbnail
+    const course = await Course.create({
+      title,
+      description,
+      category,
+      createdBy,
+      thumbnail: {
+        public_id: result.public_id,
+        secure_url: result.secure_url,
+        folder: result.folder,
+      },
+    });
+
+    if (!course) {
+      await destroyImageOnCloudinary(result.public_id);
+      throw new Error("Internal Server Error");
+    }
 
     // Saving in DB
     await course.save();
@@ -89,10 +86,10 @@ export const createCourse = async (req, res, next) => {
 
 /**
  * @GET_ALL_COURSES
- * @ROUTE @GET {{URL}}/api/v1/course/
+ * @ROUTE @GET {{URL}}/api/v1/courses/
  * @ACCESS Public
  */
-export const getAllCourses = async (req, res, next) => {
+export const getAllCourses = async (_req, res, next) => {
   try {
     // Get course from the DB through courseId but without lectures details
     const courses = await Course.find({}).select("-lectures");
@@ -111,16 +108,16 @@ export const getAllCourses = async (req, res, next) => {
 
 /**
  * @ADD_LECTURES_TO_COURSE
- * @ROUTE @POST {{URL}}/api/v1/course/:id
+ * @ROUTE @POST {{URL}}/api/v1/courses/:id
  * @ACCESS PRIVATE(ADMIN ONLY)
  */
-export const addLectureToCourse = async (req, res, next) => {
+export const addLectureToCourseById = async (req, res, next) => {
   // Check if lecture video is there is not, if not return with an error
   const lecture = req.file;
-  if (!lecture) {
-    return new AppError(400, "Provide lecture video");
-  }
   try {
+    if (!lecture) {
+      throw new Error("Provide lecture video");
+    }
     // Destructring the neccessary data
     const { title, description } = req.body;
     const { id } = req.params;
@@ -175,7 +172,7 @@ export const addLectureToCourse = async (req, res, next) => {
 
 /**
  * @GET_LECTURES_BY_COURSEID
- * @ROUTE @GET {{URL}}/api/v1/course/:id
+ * @ROUTE @GET {{URL}}/api/v1/courses/:id
  * @ACCESS PROTECTED (ADMIN OR SUBSRIBERS ONLY)
  */
 export const getLecturesByCourseId = async (req, res, next) => {
@@ -185,11 +182,11 @@ export const getLecturesByCourseId = async (req, res, next) => {
     if (!course) {
       return next(new AppError(400, "Something went wrong, Course not found"));
     }
-    const lecture = course.lectures;
+    const lectures = course.lectures;
     res.status(200).json({
       success: true,
       message: "Lecture fetched",
-      lecture,
+      lectures,
     });
   } catch (error) {
     return next(new AppError(400, error.message));
@@ -198,10 +195,10 @@ export const getLecturesByCourseId = async (req, res, next) => {
 
 /**
  * @UPDATE_COURSE
- * @ROUTE @PUT {{URL}}/api/v1/course/:id
+ * @ROUTE @PUT {{URL}}/api/v1/courses/:id
  * @ACCESS PRIVATE (ADMIN ONLY)
  */
-export const updateCourse = async (req, res, next) => {
+export const updateCourseById = async (req, res, next) => {
   const thumbnail = req.file;
   const { title } = req.body;
   try {
@@ -240,11 +237,11 @@ export const updateCourse = async (req, res, next) => {
         throw new Error("Server Error!, thumbnail could'nt be updated");
       }
       // Deleting old thumbnail from cloudinary
-      await destroyImageOnCloudinary(course.thubmnail.public_id);
+      await destroyImageOnCloudinary(course.thumbnail.public_id);
 
       // Saving new thumbnail details
-      course.thubmnail.public_id = result.public_id;
-      course.thubmnail.secure_url = result.secure_url;
+      course.thumbnail.public_id = result.public_id;
+      course.thumbnail.secure_url = result.secure_url;
 
       // Deleting the local file
       fs.rm(thumbnail.path);
@@ -267,10 +264,10 @@ export const updateCourse = async (req, res, next) => {
 
 /**
  * @DELETE_COURSE
- * @ROUTE @DELETE {{URL}}/api/v1/course/:id
+ * @ROUTE @DELETE {{URL}}/api/v1/courses/:id
  * @ACCESS PRIVATE (ADMIN ONLY)
  */
-export const deleteCourse = async (req, res, next) => {
+export const deleteCourseById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -283,7 +280,7 @@ export const deleteCourse = async (req, res, next) => {
     }
 
     // Deleting the course files,folder on cloudinary, if not, throw error
-    await deleteFolderWithContentsOnCloudinary(course.thubmnail.folder);
+    await deleteFolderWithContentsOnCloudinary(course.thumbnail.folder);
 
     // Deleting course on the folder
     await Course.findByIdAndDelete(id);
@@ -298,7 +295,7 @@ export const deleteCourse = async (req, res, next) => {
 
 /**
  * @REMOVE_LECTURE_FROM_COURSE
- * @ROUTE @DELETE {{URL}}/api/v1/course?courseId=........&lectureId=.........
+ * @ROUTE @DELETE {{URL}}/api/v1/courses?courseId=........&lectureId=.........
  * @ACCESS PRIVATE (ADMIN ONLY)
  */
 export const removeLectureFromCourse = async (req, res, next) => {

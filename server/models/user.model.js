@@ -76,7 +76,7 @@ userSchema.methods = {
       subscription: this.subscription,
       role: this.role,
     };
-    return JWT.sign(payloads, process.env.JWT_SECRET_KEY, {
+    return JWT.sign(payloads, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRY,
     });
   },

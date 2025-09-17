@@ -8,6 +8,7 @@ import { getAllCourses } from "../../store/slices/courseSlice";
 function CourseList() {
   const dispatch = useDispatch();
   const { courseData } = useSelector((state) => state.course);
+  console.log(courseData);
 
   const getAllCourse = async () => {
     await dispatch(getAllCourses());

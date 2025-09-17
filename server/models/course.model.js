@@ -20,7 +20,7 @@ const courseSchema = new Schema(
       required: [true, "Category is required"],
       trim: true,
     },
-    thubmnail: {
+    thumbnail: {
       public_id: {
         type: String,
         required: true,
@@ -34,7 +34,7 @@ const courseSchema = new Schema(
         required: true,
       },
     },
-    instructor: {
+    createdBy: {
       type: String,
       required: [true, "Instructor name is required"],
       trim: true,

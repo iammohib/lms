@@ -10,7 +10,7 @@ export const isLoggedIn = async (req, res, next) => {
     }
 
     // Verifying the token and get user-id and other details from it
-    const userDetails = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const userDetails = await jwt.verify(token, process.env.JWT_SECRET);
     if (!userDetails) {
       return next(new AppError(400, "Unauthenticated, Please login first"));
     }
@@ -24,7 +24,7 @@ export const isLoggedIn = async (req, res, next) => {
 // Middleware for authorization check
 export const authorizeRoles =
   (...roles) =>
-  async (req, res, next) => {
+  async (req, _res, next) => {
     try {
       if (!roles.includes(req.user.role)) {
         return next(

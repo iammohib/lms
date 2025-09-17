@@ -17,21 +17,21 @@ import { upload } from "../middlewares/multer.middleware.js";
 
 const userRouter = Router();
 
-userRouter.post("/register", register);
+userRouter.post("/register", upload.single("avatar"), register);
 userRouter.post("/login", login);
 userRouter.post("/logout", logout);
 userRouter.get("/me", isLoggedIn, getUser);
-userRouter.post("/changepassword", isLoggedIn, changePassword);
+userRouter.post("/change-password", isLoggedIn, changePassword);
 userRouter.post(
   "/changeprofilepic",
   isLoggedIn,
   upload.single("avatar"),
   changeProfilePic
 );
-userRouter.post("/forgotpassword", forgotPassword);
-userRouter.post("/resetpassword/:resettoken", resetPassword);
+userRouter.post("/reset", forgotPassword);
+userRouter.post("/reset/:resetToken", resetPassword);
 userRouter.put(
-  "/updateprofile",
+  "/update/:id",
   isLoggedIn,
   upload.single("avatar"),
   updateProfile

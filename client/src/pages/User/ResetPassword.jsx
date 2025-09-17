@@ -28,7 +28,7 @@ function ResetPassword() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!data.password) {
-      toast.error("All feild are required");
+      return toast.error("All feild are required");
     }
     const res = await dispatch(resetPassword([data.resetToken, data]));
     if (res?.payload?.success) {

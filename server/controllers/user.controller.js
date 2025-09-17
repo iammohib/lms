@@ -2,8 +2,7 @@ import User from "../models/user.model.js";
 import { AppError } from "../utils/error.util.js";
 import fs from "fs/promises";
 import crypto from "crypto";
-import { sendMail } from "../utils/sendEmail.js";
-import { sendGmail } from "../utils/sendGmail.js";
+import { sendEmail } from "../utils/sendEmail.js";
 import {
   uploadOnCloudinary,
   destroyImageOnCloudinary,
@@ -12,7 +11,7 @@ import {
 const cookieOption = {
   maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
   httpOnly: true,
-  secure: false,
+  secure: process.env.NODE_ENV === "production" ? true : false,
 };
 
 /**
@@ -21,17 +20,37 @@ const cookieOption = {
  * @ACCESS Public
  */
 export const register = async (req, res, next) => {
+  const avatar = req.file;
   try {
     // Destructuring the neccessary data
     const { fullName, email, password } = req.body;
     if (!fullName || !email || !password) {
-      return next(new AppError(400, "All feild are required"));
+      throw new Error("All feild are required");
+    }
+
+    if (!avatar) {
+      throw new Error("User profile picture is required.");
     }
 
     // Check if user exists with the with provided email
-    const userExist = await User.findOne({ email });
-    if (userExist) {
-      return next(new AppError(400, "Email is already registered"));
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      throw new Error("Email is already registered");
+    }
+
+    // Transformation option for cloudinary
+    const option = {
+      folder: "lms",
+      width: 250,
+      height: 250,
+      gravity: "faces",
+      crop: "fill",
+    };
+
+    // Saving image on cloudinary
+    const result = await uploadOnCloudinary(avatar.path, option);
+    if (!result) {
+      throw new Error("Server Error");
     }
 
     // Create new user, with provided email, and default data
@@ -40,17 +59,16 @@ export const register = async (req, res, next) => {
       email,
       password,
       avatar: {
-        public_id: email,
-        secure_url:
-          "https://res.cloudinary.com/du9jzqlpt/image/upload/v1674647316/avatar_drzgxv.jpg",
+        public_id: result.public_id,
+        secure_url: result.secure_url,
       },
     });
 
     // If there any problem in creating user, return with an error
     if (!user) {
-      return next(
-        new AppError(400, "User registration failed, please try again !")
-      );
+      // Deletes the old image uploaded by the user
+      await destroyImageOnCloudinary(user.avatar.public_id);
+      throw new Error("User registration failed, please try again !");
     }
 
     // If everything is okay save user to DB
@@ -69,6 +87,9 @@ export const register = async (req, res, next) => {
       user,
     });
   } catch (error) {
+    if (avatar) {
+      fs.rm(avatar.path);
+    }
     return next(new AppError(500, error.message));
   }
 };
@@ -116,7 +137,7 @@ export const logout = async (req, res, next) => {
   try {
     // Setting the cookie value to null
     res.cookie("token", null, {
-      secure: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
       maxAge: 0,
       httpOnly: true,
     });
@@ -164,8 +185,8 @@ export const getUser = async (req, res, next) => {
 export const changePassword = async (req, res, next) => {
   try {
     // Destructring the details
-    const { password, newPassword, confirmNewPassword } = req.body;
-    if (!password || !newPassword || !confirmNewPassword) {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
       return next(new AppError(500, "Fill all the feilds"));
     }
 
@@ -176,7 +197,7 @@ export const changePassword = async (req, res, next) => {
     }
 
     // Validating if old password is correct or not
-    if (!(await user.comparePassword(password))) {
+    if (!(await user.comparePassword(oldPassword))) {
       return next(
         new AppError(
           400,
@@ -205,22 +226,22 @@ export const changePassword = async (req, res, next) => {
  * @ACCESS Private (Logged in user only)
  */
 export const changeProfilePic = async (req, res, next) => {
+  // Destructring details
+  const imageFile = await req.file;
   try {
-    // Destructring details
-    const imageFile = await req.file;
     if (!imageFile) {
-      return next(new AppError(400, "Internal server error"));
+      throw new Error("Internal server error");
     }
 
     const userId = req.user.id;
     if (!userId) {
-      return next(new AppError(400, "Internal server error"));
+      throw new Error("Something went wrong");
     }
 
     // Checking if user exists or not
     const user = await User.findById(userId);
     if (!user) {
-      return next(new AppError(400, "Internal server error"));
+      throw new Error("Internal server error");
     }
 
     // Transformation option for cloudinary
@@ -232,14 +253,15 @@ export const changeProfilePic = async (req, res, next) => {
       crop: "fill",
     };
 
-    // Deletes the old image uploaded by the user
-    await destroyImageOnCloudinary(user.avatar.public_id);
-
     // Saving image on cloudinary
     const result = await uploadOnCloudinary(imageFile.path, option);
     if (!result) {
-      return next(new AppError(500, "Server Error"));
+      throw new Error("Internal server error");
     }
+
+    // Deletes the old image uploaded by the user
+    await destroyImageOnCloudinary(user.avatar.public_id);
+
     // Set the public_id and secure_url in DB
     user.avatar.public_id = result.public_id;
     user.avatar.secure_url = result.secure_url;
@@ -256,7 +278,9 @@ export const changeProfilePic = async (req, res, next) => {
       user,
     });
   } catch (error) {
-    fs.rm(imageFile.path);
+    if (imageFile) {
+      fs.rm(imageFile.path);
+    }
     return next(new AppError(400, error.message));
   }
 };
@@ -292,42 +316,33 @@ export const forgotPassword = async (req, res, next) => {
     await user.save();
 
     // Creating the reset password url
-    const resetPasswordURL = `${process.env.FRONTEND_URL}/resetpassword/${forgotPasswordToken}`;
-
-    const resetPasswordURLBE = `${process.env.BACKEND_URL}/api/v1/user/resetpassword/${forgotPasswordToken}`;
+    const resetPasswordURL = `${process.env.FRONTEND_URL}/reset-password/${forgotPasswordToken}`;
 
     // for mail body
     const subject = "Reset Password";
-    const message = `Click on the link to reset password: ${resetPasswordURL} \nor\n${resetPasswordURLBE} \n\nIgnore if you are not requested`;
+    const message = `Click on the link to reset password: ${resetPasswordURL} \nIgnore if you are not requested`;
 
     // Sending the reset password mail
-    // await sendEmail(email,subject,message);
-    await sendGmail(email, subject, message);
+    await sendEmail(email, subject, message);
 
     res.status(201).json({
       success: true,
       message: `Reset-Password Token generated and send to your email ${email} successfully`,
     });
   } catch (error) {
-    // If there is error, undefining the token and expiry
-    user.forgotPasswordToken = undefined;
-    user.forgotPasswordExpiry = undefined;
-
-    // Saving user object
-    await user.save();
     return next(new AppError(400, error.message));
   }
 };
 
 /**
  * @RESETPASSWORD
- * @ROUTE @POST {{URL}}/api/v1/user/resetpassword
+ * @ROUTE @POST {{URL}}/api/v1/user/reset/:resetToken
  * @ACCESS Private(Only user who have the reset password url)
  */
 export const resetPassword = async (req, res, next) => {
   try {
     // Extracting token from the url
-    const { resettoken } = req.params;
+    const { resetToken } = req.params;
 
     // Destructring password from the req.body
     const { password } = req.body;
@@ -338,7 +353,7 @@ export const resetPassword = async (req, res, next) => {
     // Hashing the token
     const forgotPasswordToken = await crypto
       .createHash("sha256")
-      .update(resettoken)
+      .update(resetToken)
       .digest("hex");
 
     // Check if user is valid or not
@@ -386,7 +401,7 @@ export const updateProfile = async (req, res, next) => {
     // Checking the user exitance and get details
     const user = await User.findById(id);
     if (!user) {
-      return next(new AppError(500, "Internal server error"));
+      throw new Error("Internal server error");
     }
 
     if (fullName) {
@@ -394,9 +409,6 @@ export const updateProfile = async (req, res, next) => {
     }
 
     if (imageFile) {
-      // Deletes the old image uploaded by the user
-      await destroyImageOnCloudinary(user.avatar.public_id);
-
       // Transformation option for cloudinary
       const option = {
         folder: "lms",
@@ -409,8 +421,11 @@ export const updateProfile = async (req, res, next) => {
       // Saving image on cloudinary
       const result = await uploadOnCloudinary(imageFile.path, option);
       if (!result) {
-        return next(new AppError(500, "Internal server error"));
+        throw new Error("Internal server error");
       }
+
+      // Deletes the old image uploaded by the user
+      await destroyImageOnCloudinary(user.avatar.public_id);
 
       // Set the public_id and secure_url in DB
       user.avatar.public_id = result.public_id;
@@ -477,8 +492,7 @@ export const changeEmail = async (req, res, next) => {
     const message = `Here is the OTP for email verification:\n${OTP}\n\nIgnore if not requested`;
 
     // Sending the reset password mail
-    // await sendEmail(email,subject,message);
-    await sendGmail(newEmail, subject, message);
+    await sendEmail(newEmail, subject, message);
 
     // Saving new email to DB, as temporary
     user.tempEmail = newEmail;

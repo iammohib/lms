@@ -1,16 +1,12 @@
 import { config } from "dotenv";
 config();
-import express, { urlencoded } from "express";
-import { connectToDb } from "./configs/db.js";
+import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 const app = express();
-
-// Db connection
-connectToDb();
 
 // Middleware
 // Built-In
@@ -28,7 +24,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 // Server status check route
-app.get("/ping", (req, res) => {
+app.get("/ping", (_req, res) => {
   res.status(200).send("pong");
 });
 
@@ -38,7 +34,7 @@ import { courseRouter } from "./routes/course.route.js";
 
 // Routing to routes
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/course", courseRouter);
+app.use("/api/v1/courses", courseRouter);
 
 // Default catch all route - 404
 app.all("*", (_req, res) => {
