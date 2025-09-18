@@ -86,6 +86,7 @@ export const register = async (req, res, next) => {
       message: "Account created successfully",
       user,
     });
+    fs.rm(avatar.path);
   } catch (error) {
     if (avatar) {
       fs.rm(avatar.path);

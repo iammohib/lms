@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils/error.util.js";
+import asyncHandler from "./asyncHandler.middleware.js";
 
 export const isLoggedIn = async (req, res, next) => {
   try {
@@ -36,3 +37,13 @@ export const authorizeRoles =
       return next(new AppError(400, "Erver Error !"));
     }
   };
+
+// Middleware to check if user has an active subscription or not
+export const authorizeSubscribers = asyncHandler(async (req, _res, next) => {
+  // If user is not admin or does not have an active subscription then error else pass
+  if (req.user.role !== "ADMIN" && req.user.subscription.status !== "active") {
+    return next(new AppError("Please subscribe to access this route.", 403));
+  }
+
+  next();
+});
