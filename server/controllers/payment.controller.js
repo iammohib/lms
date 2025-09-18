@@ -6,6 +6,12 @@ import { AppError } from "../utils/error.util.js";
 import { razorpay } from "../server.js";
 import Payment from "../models/payment.model.js";
 
+const cookieOption = {
+  maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production" ? true : false,
+};
+
 /**
  * @ACTIVATE_SUBSCRIPTION
  * @ROUTE @POST {{URL}}/api/v1/payments/subscribe
@@ -91,6 +97,11 @@ export const verifySubscription = asyncHandler(async (req, res, next) => {
   // Save the user in the DB with any changes
   await user.save();
 
+  // Generating JWT Token
+  const token = await user.generateJWTToken();
+
+  res.cookie("token", token, cookieOption);
+
   res.status(200).json({
     success: true,
     message: "Payment verified successfully",
@@ -165,6 +176,11 @@ export const cancelSubscription = asyncHandler(async (req, res, next) => {
 
   await user.save();
   await Payment.deleteOne({ _id: payment._id });
+
+  // Generating JWT Token
+  const token = await user.generateJWTToken();
+
+  res.cookie("token", token, cookieOption);
 
   // Send the response
   res.status(200).json({
