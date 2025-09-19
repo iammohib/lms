@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ function Login() {
     email: "",
     password: "",
   });
+  const [isFormPrefilled, setIsFormPrefilled] = useState(false);
 
   const handleUserInput = (e) => {
     const { name, value } = e.target;
@@ -40,9 +41,29 @@ function Login() {
       password: "",
     });
   };
+  useEffect(() => {
+    // parse query params
+    const params = new URLSearchParams(location.search);
+    const email = params.get("email");
+    const password = params.get("password");
+    if (email && password) {
+      setLoginData({
+        email,
+        password,
+      });
+      setIsFormPrefilled(true);
+    }
+  }, []);
   return (
     <HomeLayout>
-      <div className="min-h-screen flex justify-center items-center">
+      <div className="min-h-screen flex flex-col justify-center items-center">
+        {isFormPrefilled && (
+          <div>
+            <div className="p-10 text-yellow-600 ">
+              Click “Login” to sign in as ADMIN and unlock all admin features.
+            </div>
+          </div>
+        )}
         <form
           onSubmit={handleLogin}
           className="flex flex-col justify-center gap-3 p-4 rounded-lg text-white w-1/3 shadow-[0_0_10px_black]"
